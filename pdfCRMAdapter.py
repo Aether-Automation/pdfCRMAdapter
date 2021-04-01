@@ -30,6 +30,7 @@ def attachPdfToCrm(authToken, htmlText, quoteId, filename):
             filename + '.pdf',
             'rb')
     }
+    print("filename => " + filename)
     response = requests.post(url=url, files=request_body, headers=headers)
     if response is not None:
         print("HTTP Status Code : " + str(response.status_code))
@@ -38,28 +39,41 @@ def attachPdfToCrm(authToken, htmlText, quoteId, filename):
 
 
 def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
-    # Save HTML to ..
-    # Execute shell
     # print("convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf !!! ")
     # print("Authorization header => " + authToken)
     # print("Given QuoteID => " + quoteId)
     # print("Given filename => " + filename)
     # print("Given HTML => " + htmlText)
 
-    # Save htmlText to filename.html.
-    # Call to conversion URL.
-    # Save the result to filename.pdf.
+    # curl -v -X POST -d @htmlFilename -JLO http://138.197.166.196:5001/pdf?filename=filename.pdf
+    orgHtml = open(filename + '.html', "w")
+    htmlFilename = filename + '.html'
+    orgHtml.write(htmlText)
+    orgHtml.close()
 
-    url = 'http://138.197.166.196:5001/pdf?filename=' + filename + '.pdf'
-    request_body = htmlText
-    # print(type(request_body))
-    response = requests.post(url=url, data=request_body.encode('ascii', 'ignore'))
+    params = (
+        ('filename', 'result.pdf'),
+    )
+
+    data = open('attach_test_two.html')
+    response = requests.post('http://138.197.166.196:5001/pdf', params=params, data=data)
     if response is not None:
         print("HTTP Status Code : " + str(response.status_code))
         tempFile = open(filename + '.pdf', "w")
         tempFile.write(response.text)
         tempFile.close()
-        attachPdfToCrm(authToken, htmlText, quoteId, filename)
+
+
+    # url = 'http://138.197.166.196:5001/pdf?filename=' + filename + '.pdf'
+    # request_body = htmlText
+    # # print(type(request_body))
+    # response = requests.post(url=url, data=request_body.encode('ascii', 'ignore'))
+    # if response is not None:
+    #     print("HTTP Status Code : " + str(response.status_code))
+    #     tempFile = open(filename + '.pdf', "w")
+    #     tempFile.write(response.text)
+    #     tempFile.close()
+    #     attachPdfToCrm(authToken, htmlText, quoteId, filename)
 
 
     return True
@@ -77,6 +91,8 @@ def index():
     quoteId = request.form["quoteId"]
     outputFilename = request.form["filename"]
     htmlText = request.form["htmltext"]
+
+    outputFilename = "attach_test_two"
 
     thread = multiprocessing.Process(target=convertHtmlToPdf, args=(authToken,htmlText,quoteId,outputFilename))
     thread.start()
