@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
-import subprocess
-# import multiprocessing
+# import subprocess
+import multiprocessing
 # import dataset
 import time
 import random
@@ -21,16 +21,12 @@ DONE - -> Call to endpoint occurs; the posted parameters are 'filename' 'htmltex
 """
 
 
-def convertHtmlToPdf(htmlText, quoteId, filename):
+def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
     """ Takes the HTML in tmpspool/quote.html, and writes out tmpspool/quote.pdf"""
-    try:
-        retcode = call("mycmd" + " myarg", shell=True)
-        if retcode < 0:
-            print("Child was terminated by signal", -retcode, file=sys.stderr)
-        else:
-            print("Child returned", retcode, file=sys.stderr)
-    except OSError as e:
-        print("Execution failed:", e, file=sys.stderr)
+    # Save HTML to ..
+    # Execute shell
+    print("convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf !!! ")
+
     return True
 
 def attachPdfToCrm(htmlText, quoteId, filename, authtoken):
@@ -50,15 +46,19 @@ def attachPdfToCrm(htmlText, quoteId, filename, authtoken):
 # Headers: Need 'Authorization: Zoho-oauthtoken'
 @app.route('/', methods=['POST'])
 def index():
-    """ Get { HTMLText ... QuoteID ... Filename  - ZAuthToken. }"""
     print("Authorization header => " + request.headers['Authorization'])
     print("Given QuoteID => " + request.form["quoteId"])
     print("Given filename => " + request.form["filename"])
     print("Given HTML => " + request.form["htmltext"])
 
-    # Header and arguments in Flask to base route.
-    # thread = multiprocessing.Process(target=update_person, args=(name,))
-    # thread.start()
+    authToken = request.headers['Authorization']
+    quoteId = request.form["quoteId"]
+    outputFilename = request.form["filename"]
+    # Also save the HTML to tmpspool/$filename
+    htmlText = request.form["htmltext"]
+
+    thread = multiprocessing.Process(target=convertHtmlToPdf, args=(authToken,htmlText,quoteId,outputFilename))
+    thread.start()
 
 
 
