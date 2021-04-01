@@ -46,7 +46,7 @@ def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
     # print("Given HTML => " + htmlText)
 
     # curl -v -X POST -d @htmlFilename -JLO http://138.197.166.196:5001/pdf?filename=filename.pdf
-    orgHtml = open(filename + '.html', "w")
+    orgHtml = open(filename + '.html', "wb")
     htmlFilename = filename + '.html'
     orgHtml.write(htmlText)
     orgHtml.close()
@@ -55,11 +55,11 @@ def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
         ('filename', 'result.pdf'),
     )
 
-    data = open('attach_test_two.html')
+    data = open('attach_test_two.html', 'rb')
     response = requests.post('http://138.197.166.196:5001/pdf', params=params, data=data)
     if response is not None:
         print("HTTP Status Code : " + str(response.status_code))
-        tempFile = open(filename + '.pdf', "w")
+        tempFile = open(filename + '.pdf', 'wb')
         tempFile.write(response.text)
         tempFile.close()
 
