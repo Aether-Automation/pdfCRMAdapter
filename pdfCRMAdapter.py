@@ -6,7 +6,7 @@ import multiprocessing
 import time
 import random
 import sys
-
+import os
 
 app = Flask(__name__)
 
@@ -46,6 +46,8 @@ def convertHtmlToPdf(authToken, htmlText, module, recordId, filename):
     htmlFilename = filename + '.html'
     orgHtml.write(htmlText)
     orgHtml.close()
+    # Clobber the fle.
+    os.remove(filename + ".pdf")
     result = subprocess.run(["curl", "-v", "-X", "POST", "-d",
                              "@" + htmlFilename, "-JLO",
                              "http://138.197.166.196:5001/pdf?filename=" + filename + ".pdf"])
