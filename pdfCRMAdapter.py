@@ -33,21 +33,21 @@ def attachPdfToCrm(authToken, htmlText, module, recordId, filename):
     }
     # print("filename => " + filename)
     response = requests.post(url=url, files=request_body, headers=headers)
-    # if response is not None:
-    #     print("HTTP Status Code : " + str(response.status_code))
-    #     print(response.json())
+    if response is not None:
+        print("HTTP Status Code : " + str(response.status_code))
+        print(response.json())
+        # Clobber the temp pdf file.
+        os.remove(filename + ".pdf")
     return True
 
 # Phase 2 -- convert HTML to PDF.
 def convertHtmlToPdf(authToken, htmlText, module, recordId, filename):
     # print("convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf !!! ")
     time.sleep(15)  # Ensures the files are copied first.
-    orgHtml = open(filename + '.html', "w")
-    htmlFilename = filename + '.html'
+    htmlFilename = "tempspool/" + filename + '.html'
+    orgHtml = open(htmlFilename, "w")
     orgHtml.write(htmlText)
     orgHtml.close()
-    # Clobber the fle.
-    os.remove(filename + ".pdf")
     result = subprocess.run(["curl", "-v", "-X", "POST", "-d",
                              "@" + htmlFilename, "-JLO",
                              "http://138.197.166.196:5001/pdf?filename=" + filename + ".pdf"])
@@ -68,7 +68,6 @@ def index():
     module = request.form["module"]
     outputFilename = request.form["filename"]
     htmlText = request.form["htmltext"]
-
 
     thread = multiprocessing.Process(target=convertHtmlToPdf, args=(authToken,htmlText,module,recordId,outputFilename))
     thread.start()
