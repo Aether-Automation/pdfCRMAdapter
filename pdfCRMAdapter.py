@@ -26,6 +26,10 @@ def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
     # Save HTML to ..
     # Execute shell
     print("convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf !!! ")
+    print("Authorization header => " + authToken)
+    print("Given QuoteID => " + quoteId)
+    print("Given filename => " + filename)
+    print("Given HTML => " + htmlText)
 
     return True
 
@@ -46,10 +50,10 @@ def attachPdfToCrm(htmlText, quoteId, filename, authtoken):
 # Headers: Need 'Authorization: Zoho-oauthtoken'
 @app.route('/', methods=['POST'])
 def index():
-    print("Authorization header => " + request.headers['Authorization'])
-    print("Given QuoteID => " + request.form["quoteId"])
-    print("Given filename => " + request.form["filename"])
-    print("Given HTML => " + request.form["htmltext"])
+    # print("Authorization header => " + request.headers['Authorization'])
+    # print("Given QuoteID => " + request.form["quoteId"])
+    # print("Given filename => " + request.form["filename"])
+    # print("Given HTML => " + request.form["htmltext"])
 
     authToken = request.headers['Authorization']
     quoteId = request.form["quoteId"]
