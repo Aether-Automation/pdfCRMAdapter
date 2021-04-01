@@ -21,8 +21,25 @@ DONE - -> Call to endpoint occurs; the posted parameters are 'filename' 'htmltex
 """
 
 
+
+def attachPdfToCrm(authToken, htmlText, quoteId, filename):
+    url = 'https://www.zohoapis.com/crm/v2/Quotes/" + quoteId + "/Attachments'
+    headers = {
+        'Authorization': authtoken
+    }
+    request_body = {
+        'file': open(
+            '/Users/dylang/Projects/2021-03-31-Nimbis_AA-518/pdfFlaskAdapter/attach_test.pdf',
+            'rb')
+    }
+    response = requests.post(url=url, files=request_body, headers=headers)
+    if response is not None:
+        print("HTTP Status Code : " + str(response.status_code))
+        print(response.json())
+    return True
+
+
 def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
-    """ Takes the HTML in tmpspool/quote.html, and writes out tmpspool/quote.pdf"""
     # Save HTML to ..
     # Execute shell
     print("convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf !!! ")
@@ -31,19 +48,8 @@ def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
     print("Given filename => " + filename)
     print("Given HTML => " + htmlText)
 
-    return True
+    attachPdfToCrm(authToken, htmlText, quoteId, filename)
 
-def attachPdfToCrm(htmlText, quoteId, filename, authtoken):
-    """ Renames tmpspool/quote.pdf to the filename, and then attaches it to CRM quote record."""
-#    time.sleep(10)  # simulate a long running process
-#     try:
-#         retcode = call("mycmd" + " myarg", shell=True)
-#         if retcode < 0:
-#             print("Child was terminated by signal", -retcode, file=sys.stderr)
-#         else:
-#             print("Child returned", retcode, file=sys.stderr)
-#     except OSError as e:
-#         print("Execution failed:", e, file=sys.stderr)
     return True
 
 
@@ -58,7 +64,7 @@ def index():
     authToken = request.headers['Authorization']
     quoteId = request.form["quoteId"]
     outputFilename = request.form["filename"]
-    # Also save the HTML to tmpspool/$filename
+    # TODO save the HTML to tmpspool/$filename
     htmlText = request.form["htmltext"]
 
     thread = multiprocessing.Process(target=convertHtmlToPdf, args=(authToken,htmlText,quoteId,outputFilename))
