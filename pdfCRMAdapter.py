@@ -52,7 +52,7 @@ def attachPdfToCrm(htmlText, quoteId, filename, authtoken):
 def index():
     """ Get { HTMLText ... QuoteID ... Filename  - ZAuthToken. }"""
     print("Authorization header => " + request.headers['Authorization'])
-
+    print("Given data => " + request.data)
     # Header and arguments in Flask to base route.
     # thread = multiprocessing.Process(target=update_person, args=(name,))
     # thread.start()
