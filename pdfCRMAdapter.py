@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request
 import requests
-# import subprocess
+import subprocess
 import multiprocessing
 # import dataset
 import time
 import random
+import sys
+
 
 app = Flask(__name__)
 
@@ -19,7 +21,7 @@ DONE-> Endpoint forks a separate python method:
 """
 
 
-
+# Phase 3 -- final, attach.
 def attachPdfToCrm(authToken, htmlText, quoteId, filename):
     url = 'https://www.zohoapis.com/crm/v2/Quotes/' + quoteId + '/Attachments'
     headers = {
@@ -37,7 +39,7 @@ def attachPdfToCrm(authToken, htmlText, quoteId, filename):
         print(response.json())
     return True
 
-
+# Phase 2 -- convert HTML to PDF.
 def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
     # print("convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf !!! ")
     # print("Authorization header => " + authToken)
@@ -45,23 +47,28 @@ def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
     # print("Given filename => " + filename)
     # print("Given HTML => " + htmlText)
 
-    # curl -v -X POST -d @htmlFilename -JLO http://138.197.166.196:5001/pdf?filename=filename.pdf
     orgHtml = open(filename + '.html', "wb")
     htmlFilename = filename + '.html'
     orgHtml.write(htmlText)
     orgHtml.close()
 
-    params = (
-        ('filename', 'result.pdf'),
-    )
+    # curl -v -X POST -d @htmlFilename -JLO http://138.197.166.196:5001/pdf?filename=filename.pdf
+    result = subprocess.run(["curl", "-v", "-X", "POST", "-d",
+                             "@" + htmlFilename, "-JLO",
+                             "http://138.197.166.196:5001/pdf?filename=" + filename + ".pdf"])
+    print("Result => " + result)
 
-    data = open('attach_test_two.html', 'rb')
-    response = requests.post('http://138.197.166.196:5001/pdf', params=params, data=data)
-    if response is not None:
-        print("HTTP Status Code : " + str(response.status_code))
-        tempFile = open(filename + '.pdf', 'wb')
-        tempFile.write(response.text)
-        tempFile.close()
+
+    # params = (
+    #     ('filename', 'result.pdf'),
+    # )
+    # data = open('attach_test_two.html', 'rb')
+    # response = requests.post('http://138.197.166.196:5001/pdf', params=params, data=data)
+    # if response is not None:
+    #     print("HTTP Status Code : " + str(response.status_code))
+    #     tempFile = open(filename + '.pdf', 'wb')
+    #     tempFile.write(response.content)
+    #     tempFile.close()
 
 
     # url = 'http://138.197.166.196:5001/pdf?filename=' + filename + '.pdf'
@@ -80,6 +87,7 @@ def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
 
 
 # Headers: Need 'Authorization: Zoho-oauthtoken'
+# Phase 1 -- get the headers and relevant data to service the request.
 @app.route('/', methods=['POST'])
 def index():
     # print("Authorization header => " + request.headers['Authorization'])
