@@ -21,8 +21,8 @@ DONE    --> This method invokes curl to turn the HTML into a PDF, and then invok
 """
 
 # Phase 3 -- final, attach.
-def attachPdfToCrm(authToken, htmlText, quoteId, filename):
-    url = 'https://www.zohoapis.com/crm/v2/Quotes/' + quoteId + '/Attachments'
+def attachPdfToCrm(authToken, htmlText, module, recordId, filename):
+    url = 'https://www.zohoapis.com/crm/v2/' + module + '/' + recordId + '/Attachments'
     headers = {
         'Authorization': authToken
     }
@@ -39,7 +39,7 @@ def attachPdfToCrm(authToken, htmlText, quoteId, filename):
     return True
 
 # Phase 2 -- convert HTML to PDF.
-def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
+def convertHtmlToPdf(authToken, htmlText, module, recordId, filename):
     # print("convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf !!! ")
     time.sleep(15)  # Ensures the files are copied first.
     orgHtml = open(filename + '.html', "w")
@@ -49,7 +49,7 @@ def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
     result = subprocess.run(["curl", "-v", "-X", "POST", "-d",
                              "@" + htmlFilename, "-JLO",
                              "http://138.197.166.196:5001/pdf?filename=" + filename + ".pdf"])
-    attachPdfToCrm(authToken, htmlText, quoteId, filename)
+    attachPdfToCrm(authToken, htmlText, module, recordId, filename)
     return True
 
 
@@ -62,13 +62,13 @@ def index():
     # print("Given filename => " + request.form["filename"])
     # print("Given HTML => " + request.form["htmltext"])
     authToken = request.headers['Authorization']
-    quoteId = request.form["quoteId"]
+    recordId = request.form["recordId"]
+    module = request.form["module"]
     outputFilename = request.form["filename"]
-    # outputFilename = "attach_test_two"
     htmlText = request.form["htmltext"]
 
 
-    thread = multiprocessing.Process(target=convertHtmlToPdf, args=(authToken,htmlText,quoteId,outputFilename))
+    thread = multiprocessing.Process(target=convertHtmlToPdf, args=(authToken,htmlText,module,recordId,outputFilename))
     thread.start()
     return "Hello, World."
 
