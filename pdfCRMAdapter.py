@@ -13,11 +13,8 @@ Flow:
 DONE - -> CRM kicks-off process from 'Generate Quote' button action.
 DONE - -> Images, details are spooled.  Images are accessible online, details are used to fill in an HTML page.
 DONE - -> Call to endpoint occurs; the posted parameters are 'filename' 'htmltext' 'quoteId'
--> Endpoint forks a separate python method:
+DONE-> Endpoint forks a separate python method:
     --> This method invokes curl to turn the HTML into a PDF, and then invokes curl to attach in CRM.
-* Listens for incoming, and can print parameters.
-* Can fork a background task which saves to a specified temp.
-* 
 
 """
 
@@ -55,10 +52,13 @@ def convertHtmlToPdf(authToken, htmlText, quoteId, filename):
 
     url = 'http://138.197.166.196:5001/pdf?filename=' + filename + '.pdf'
     request_body = htmlText
-    response = requests.post(url=url, files=request_body)
+    # print(type(request_body))
+    response = requests.post(url=url, data=request_body.encode('ascii', 'ignore'))
     if response is not None:
         print("HTTP Status Code : " + str(response.status_code))
-        print(response.json())
+        tempFile = open(filename + '.pdf', "w")
+        tempFile.write(response.text)
+        tempFile.close()
         attachPdfToCrm(authToken, htmlText, quoteId, filename)
 
 
