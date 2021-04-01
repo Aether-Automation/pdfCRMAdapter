@@ -52,6 +52,7 @@ def convertHtmlToPdf(authToken, htmlText, module, recordId, filename):
                              "@" + htmlFilename, "-JLO",
                              "http://138.197.166.196:5001/pdf?filename=" + filename + ".pdf"])
     attachPdfToCrm(authToken, htmlText, module, recordId, filename)
+    os.remove(htmlFilename)
     return True
 
 
