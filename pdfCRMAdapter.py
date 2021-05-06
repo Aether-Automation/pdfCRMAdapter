@@ -7,6 +7,8 @@ import time
 import random
 import sys
 import os
+# For removing unicode barf:
+from unidecode import unidecode
 
 app = Flask(__name__)
 
@@ -45,15 +47,10 @@ def convertHtmlToPdf(authToken, htmlText, module, recordId, filename):
     # print("convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf convertHtmlToPdf !!! ")
     time.sleep(35)  # Ensures the files are copied first.
     htmlFilename = "tempspool/" + filename + '.html'
-    cleanedHtmlText = htmlText
-    # Change the 66/99 smart quotes into plain " quotes.
-    cleanedHtmlText = cleanedHtmlText.replace("“", "\"")
-    cleanedHtmlText = cleanedHtmlText.replace("”", "\"")
-    # Change the 6/9 smart apostrophe into a plain '.
-    cleanedHtmlText = cleanedHtmlText.replace("’", "\'")
-    cleanedHtmlText = cleanedHtmlText.replace("‘", "\'")
-    # é =>  e' ?
-    # There are other characters which are issues.
+
+    # This clears out all unicode barf.
+    cleanedHtmlText = unidecode(htmlText)
+
     orgHtml = open(htmlFilename, "w")
     orgHtml.write(cleanedHtmlText)
     orgHtml.close()
