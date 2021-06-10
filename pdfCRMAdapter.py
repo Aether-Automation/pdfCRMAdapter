@@ -105,7 +105,7 @@ def index():
     fieldName = request.form.get('fieldName')
     urlEndpoint = request.form.get('urlEndpoint')
 
-    thread = multiprocessing.Process(target=convertHtmlToPdf, args=(authToken,htmlText,module,recordId,outputFilename))
+    thread = multiprocessing.Process(target=convertHtmlToPdf, args=(authToken,htmlText,module,recordId,outputFilename, fieldName, urlEndpoint, appType))
     thread.start()
     return "Hello, World."
 
